@@ -3,15 +3,15 @@ podTemplate(label: 'docker',
   volumes: [hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock')]
   ) {
 
-  def image = "pctn/hello-malibu"
+  def image = "pctn/springboot-hello"
   
   node('docker') {
     stage('Checkout GitHub') {
-      git 'https://github.com/pctoolchain/hello-malibu-app.git'
+      git 'https://github.com/malibupctn/springboot-hello.git'
     }
     stage('Docker Build') {
       container('docker') {
-//        sh "docker build -t ${image} ."
+        sh "docker build -t ${image} ."
       }
     }
     stage('Docker Push') {
@@ -20,16 +20,9 @@ podTemplate(label: 'docker',
             usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
                 sh "docker login -u ${USERNAME} -p ${PASSWORD} https://malibu-repo-local.devrepo.malibu-pctn.com"
             }
-//            sh "docker tag pctn/hello-malibu:latest malibu-repo-local.devrepo.malibu-pctn.com/pctn/hello-malibu:latest"
-//            sh "docker push malibu-repo-local.devrepo.malibu-pctn.com/pctn/hello-malibu:latest"
+            sh "docker tag pctn/springboot-hello:latest malibu-repo-local.devrepo.malibu-pctn.com/pctn/springboot-hello:latest"
+            sh "docker push malibu-repo-local.devrepo.malibu-pctn.com/pctn/springboot-hello:latest"
         }
     }
-    stage('AWS Test') {
-      //sh "curl -o /usr/local/bin/aws https://raw.githubusercontent.com/mesosphere/aws-cli/master/aws.sh && chmod a+x /usr/local/bin/aws"
-      //sh "apk update && apk add bash"
-      //withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-role']]) {
-      sh 'aws lambda invoke --invocation-type RequestResponse --function-name UpdateSecurityGroupWithHomeIP --region eu-west-1 --log-type Tail --payload "{\"ip\":\"1.2.3.4/32\"}"'
-      //}
-    }    
   }
 }
