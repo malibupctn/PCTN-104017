@@ -1,28 +1,49 @@
-podTemplate(label: 'docker',
-  containers: [containerTemplate(name: 'docker', image: 'docker:1.11', ttyEnabled: true, command: 'cat')],
-  volumes: [hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock')]
-  ) {
+def label = "kaniko-${UUID.randomUUID().toString()}"
 
-  def image = "pctn/springboot-hello"
-  
-  node('docker') {
+podTemplate(name: 'kaniko', label: label, yaml: """
+kind: Pod
+metadata:
+  name: kaniko
+  namespace: kaniko
+spec:
+  containers:
+  - name: kaniko
+    image: baserepodev.devrepo.malibu-pctn.com/104017-malibu-artifacts/kaniko-executor:latest
+    args: ["--dockerfile=Dockerfile",
+            "--context=s3://kaniko-contexts/springboot-hello.tar.gz",
+            "--destination=baserepodev.devrepo.malibu-pctn.com/104017-malibu-artifacts/springboot-hello-kaniko:latest"]
+    volumeMounts:
+      - name: aws-secret-nokey
+        mountPath: /root/.aws
+      - name: devrepo-secret
+        mountPath: /root/
+  restartPolicy: Never
+  volumes:
+    - name: aws-secret-nokey
+      secret:
+        secretName: aws-secret-nokey
+    - name: devrepo-secret
+      projected:
+        sources:
+        - secret:
+            name: devrepo-secret
+            items:
+            - key: .dockerconfigjson
+              path: .docker/config.json
+""") {
+  node(label) {
     stage('Checkout GitHub') {
       git 'https://github.com/malibupctn/springboot-hello.git'
     }
-    stage('Docker Build') {
-      container('docker') {
-        sh "docker build -t ${image} ."
+    stage('Create Kaniko Context'){
+      tar -C springboot-hello -cvzf springboot-hello.tar.gz .
+    }
+    stage('Copy Context To s3'){
+      aws s3 cp springboot-hello.tar.gz s3://kaniko-contexts
+    }
+
+    stage('Build with Kaniko') {
+        container(name: 'kaniko')
       }
     }
-    stage('Docker Push') {
-        container('docker') {
-            withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'artifactory',
-            usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
-                sh "docker login -u ${USERNAME} -p ${PASSWORD} https://malibu-repo-local.devrepo.malibu-pctn.com"
-            }
-            sh "docker tag pctn/springboot-hello:latest malibu-repo-local.devrepo.malibu-pctn.com/pctn/springboot-hello:latest"
-            sh "docker push malibu-repo-local.devrepo.malibu-pctn.com/pctn/springboot-hello:latest"
-        }
-    }
   }
-}
