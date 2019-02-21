@@ -36,7 +36,7 @@ spec:
       git 'https://github.com/malibupctn/springboot-hello.git'
     }
     stage('Create Kaniko Context'){
-      tar -C springboot-hello -cvzf springboot-hello.tar.gz .
+      //tar -C springboot-hello -cvzf springboot-hello.tar.gz .
     }
     stage('Copy Context To s3'){
       aws s3 cp springboot-hello.tar.gz s3://kaniko-contexts
