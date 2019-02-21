@@ -42,6 +42,7 @@ spec:
       aws s3 cp springboot-hello.tar.gz 's3://kaniko-contexts'
     }
     stage('Build with Kaniko') {
+        git 'https://github.com/jenkinsci/docker-jnlp-slave.git'
         container(name: 'kaniko')
       }
     }
