@@ -9,9 +9,9 @@ spec:
   containers:
   - name: kaniko
     image: baserepodev.devrepo.malibu-pctn.com/104017-malibu-artifacts/kaniko-executor:latest
-    args: ["--dockerfile=Dockerfile",
-            "--context=s3://kaniko-contexts/springboot-hello.tar.gz",
-            "--destination=baserepodev.devrepo.malibu-pctn.com/104017-malibu-artifacts/springboot-hello-kaniko:latest"]
+    args: ['--dockerfile=Dockerfile',
+            '--context=s3://kaniko-contexts/springboot-hello.tar.gz',
+            '--destination=baserepodev.devrepo.malibu-pctn.com/104017-malibu-artifacts/springboot-hello-kaniko:latest']
     volumeMounts:
       - name: aws-secret-nokey
         mountPath: /root/.aws
@@ -41,7 +41,6 @@ spec:
     stage('Copy Context To s3'){
       aws s3 cp springboot-hello.tar.gz s3://kaniko-contexts
     }
-
     stage('Build with Kaniko') {
         container(name: 'kaniko')
       }
