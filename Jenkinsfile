@@ -39,7 +39,7 @@ spec:
       //tar -C springboot-hello -cvzf springboot-hello.tar.gz .
     }
     stage('Copy Context To s3'){
-      aws s3 cp springboot-hello.tar.gz s3://kaniko-contexts
+      aws s3 cp springboot-hello.tar.gz 's3://kaniko-contexts'
     }
     stage('Build with Kaniko') {
         container(name: 'kaniko')
