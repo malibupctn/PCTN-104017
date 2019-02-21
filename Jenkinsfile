@@ -4,7 +4,6 @@ podTemplate(name: 'kaniko', label: label, yaml: """
 kind: Pod
 metadata:
   name: kaniko
-  namespace: kaniko
 spec:
   containers:
   - name: kaniko
