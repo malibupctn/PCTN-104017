@@ -1,20 +1,18 @@
 pipeline {
-  agent {
-    kubernetes {
-      //cloud 'kubernetes'
-      label 'mypod'
-      yaml """
+    agent {
+        kubernetes {
+            label 'kaniko'
+            defaultContainer 'jnlp'
+            yaml """
 apiVersion: v1
 kind: Pod
+metadata:
+  labels:
+    some-label: some-label-value
 spec:
   containers:
-  - name: maven
-    image: maven:3.6-jdk-8
-    command: ['cat']
-    tty: true
   - name: kaniko
     image: gcr.io/kaniko-project/executor:debug
-    imagePullPolicy: Always
     command:
     - /busybox/cat
     tty: true
@@ -30,35 +28,23 @@ spec:
           items:
             - key: .dockerconfigjson
               path: config.json
+    
+    
 """
-    }
-  }
-  stages {
-    stage('Run maven') {
-      steps {
-        container('maven') {
-          sh 'mvn -version'
-        }
-      }
-    }
-    stage('build maven') {
-        steps {
-            container('maven') {
-                sh 'mvn package -B -e -Dmaven.test.skip=true'
-            }
         }
     }
+    stages {
         stage('Build with Kaniko') {
-      environment {
-        PATH = "/busybox:/kaniko:$PATH"
-      }
-      steps {
+            steps {
+      
         container(name: 'kaniko', shell: '/busybox/sh') {
+           withEnv(['PATH+EXTRA=/busybox']) {
             sh '''#!/busybox/sh
-            /kaniko/executor -v debug --context `pwd` --insecure --skip-tls-verify --destination=baserepodev.devrepo.malibu-pctn.com/104017-malibu-artifacts/hello-kaniko:3
+            /kaniko/executor --context `pwd` --destination=baserepodev.devrepo.malibu-pctn.com/104017-malibu-artifacts/hello-kaniko:3
             '''
+           }
+        }
         }
       }
     }
-  }
 }
