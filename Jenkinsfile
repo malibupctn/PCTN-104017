@@ -55,7 +55,7 @@ spec:
       steps {
         container(name: 'kaniko', shell: '/busybox/sh') {
             sh '''#!/busybox/sh
-            /kaniko/executor -v debug -f `pwd`/Dockerfile -c `pwd` --insecure --skip-tls-verify --destination=baserepodev.devrepo.malibu-pctn.com/104017-malibu-artifacts/hello-kaniko:3
+            /kaniko/executor -v debug --context `pwd` --insecure --skip-tls-verify --destination=baserepodev.devrepo.malibu-pctn.com/104017-malibu-artifacts/hello-kaniko:3
             '''
         }
       }
