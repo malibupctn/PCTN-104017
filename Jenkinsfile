@@ -9,7 +9,7 @@ kind: Pod
 spec:
   containers:
   - name: maven
-    image: maven:3.3.9-jdk-8-alpine
+    image: maven:3.6-jdk-8
     command: ['cat']
     tty: true
 """
