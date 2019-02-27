@@ -25,7 +25,10 @@ spec:
     }
     stage('build maven') {
         steps {
-            sh 'mvn verify'
+            container('maven') 
+            {
+                sh 'mvn verify'
+            }
         }
     }
   }
