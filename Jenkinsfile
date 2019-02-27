@@ -26,7 +26,7 @@ spec:
     stage('build maven') {
         steps {
             container('maven') {
-                sh 'mvn package'
+                sh 'mvn package -B -e'
             }
         }
     }
