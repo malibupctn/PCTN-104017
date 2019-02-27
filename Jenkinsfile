@@ -29,7 +29,7 @@ spec:
           name: devrepo-secret
           items:
             - key: .dockerconfigjson
-              path: .docker/config.json
+              path: config.json
 """
     }
   }
