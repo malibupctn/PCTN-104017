@@ -2,7 +2,7 @@ pipeline {
   agent {
     kubernetes {
       //cloud 'kubernetes'
-      label 'malibu-pod'
+      label 'mypod'
       yaml """
 apiVersion: v1
 kind: Pod
@@ -25,8 +25,7 @@ spec:
     }
     stage('build maven') {
         steps {
-            container('maven') 
-            {
+            container('maven') {
                 sh 'mvn package'
             }
         }
