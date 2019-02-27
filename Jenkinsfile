@@ -24,7 +24,7 @@ spec:
     projected:
       sources:
       - secret:
-          name: devrepo-secret
+          name: docker-credentials
           items:
             - key: .dockerconfigjson
               path: config.json
