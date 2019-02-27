@@ -27,7 +27,7 @@ spec:
         steps {
             container('maven') 
             {
-                sh 'mvn verify'
+                sh 'mvn package'
             }
         }
     }
