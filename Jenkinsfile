@@ -9,11 +9,11 @@ kind: Pod
 spec:
   containers:
   - name: maven
-    image: maven:3.6-jdk-8
+    image: baserepodev.devrepo.malibu-pctn.com/104017-malibu-artifacts/cloudbees-base-images/maven:3.6-jdk-8
     command: ['cat']
     tty: true
   - name: kaniko
-    image: gcr.io/kaniko-project/executor:debug
+    image: baserepodev.devrepo.malibu-pctn.com/104017-malibu-artifacts/cloudbees-base-images/kaniko-project/executor:debug
     imagePullPolicy: Always
     command:
     - /busybox/cat
